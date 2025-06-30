@@ -1,0 +1,24 @@
+
+# Hidden folders
+.*/
+
+# Object files
+*.o
+*.obj
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects
+*.dll
+*.so
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.elf
+
+# Resource files
+*.res
