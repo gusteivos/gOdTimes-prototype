@@ -270,24 +270,25 @@ simulation_t *new_simulation(lua_Unsigned width, lua_Unsigned height, lua_State 
 
 static void call_lua_update(lua_State *L, int lua_ref, int x, int y)
 {
+
     if (lua_ref == LUA_NOREF)
     {
+
         return;
+
     }
+
     lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
-    if (!lua_isfunction(L, -1))
-    {
-        lua_pop(L, 1);
-        assert(0);
-        return;
-    }
+
     lua_pushinteger(L, x);
     lua_pushinteger(L, y);
+
     luascript_error_message(
         L, 
         lua_pcall(L, 2, 0, 0),
         false
     );
+
 }
 
 
@@ -314,7 +315,7 @@ int simulation_get_target(simulation_t *simulation, lua_Unsigned x, lua_Unsigned
 
     *target = simulation->targets[y * simulation->width + x];
 
-    return 0;
+    return 1;
 
 }
 
@@ -349,19 +350,14 @@ int simulation_set_target_update(simulation_t *simulation, lua_Unsigned x, lua_U
 int simulation_update(simulation_t *simulation)
 {
 
-    for (lua_Integer y = (lua_Integer)simulation->height - 1; 0 <= y; --y)
+    for (lua_Unsigned x = 0; x < (lua_Integer)simulation->height * simulation->width; ++x)
     {
 
-        for (lua_Unsigned x = 0; x < simulation->width; ++x)
-        {
+        simulation->targets_update[x] = false;
 
-            simulation->targets_update[y * simulation->width + x] = false;
-
-        }
-    
     }
 
-    for (lua_Integer y = (lua_Integer)simulation->height - 1; 0 <= y; --y)
+    for (lua_Unsigned y = 0; y < simulation->height; ++y)
     {
 
         for (lua_Unsigned x = 0; x < simulation->width; ++x)
@@ -370,21 +366,23 @@ int simulation_update(simulation_t *simulation)
             if (!simulation->targets_update[y * simulation->width + x])
             {
 
-                lua_Integer target;
-
-                simulation_get_target(simulation, x, y, &target);
-
-                lua_Unsigned abs_target = (lua_Unsigned)llabs(target);
-
-                if ((size_t)abs_target >= simulation->particle_data_count)
+                lua_Integer target = simulation->targets[y * simulation->width + x];
+        
+                if (target < 0)
                 {
-
-                    continue;
-
+                
+                    target = -target;
+                
                 }
 
-                call_lua_update(simulation->lua_state, simulation->particle_data[abs_target]->lua_ref, x, y);
+                if ((size_t)target >= simulation->particle_data_count)
+                {
+                
+                    continue;
+                
+                }
 
+                call_lua_update(simulation->lua_state, simulation->particle_data[target]->lua_ref, x, y);
 
             }
 
@@ -404,33 +402,37 @@ int simulation_render(simulation_t *simulation, SDL_Renderer *renderer)
 
         for (lua_Unsigned x = 0; x < simulation->width; ++x)
         {
-
-            lua_Integer target;
-
-            simulation_get_target(simulation, x, y, &target);
-
-            lua_Unsigned abs_target = (lua_Unsigned)llabs(target);
-
-            if ((size_t)abs_target >= simulation->particle_data_count)
+            
+            lua_Integer target = simulation->targets[y * simulation->width + x];
+        
+            if (target < 0)
             {
-
-                continue;
-
+            
+                target = -target;
+            
             }
 
-            SDL_Color color = simulation->particle_data[abs_target]->color;
+            if ((size_t)target >= simulation->particle_data_count)
+            {
+            
+                continue;
+            
+            }
 
-            SDL_SetRenderDrawColor(renderer, color.r,  color.g,  color.b,  color.a);
+            SDL_Color color = simulation->particle_data[target]->color;
 
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+            
             SDL_RenderDrawPoint(renderer, x, y);
 
         }
-
+    
     }
 
     return 0;
 
 }
+
 
 void free_simulation(simulation_t *simulation)
 {

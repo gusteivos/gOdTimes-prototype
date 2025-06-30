@@ -17,9 +17,9 @@
 struct simulation_particle_data_s
 {
 
-    char *name;
-
     SDL_Color color;
+    
+    char *name;
 
     int lua_ref;
 
@@ -34,13 +34,9 @@ void free_simulation_particle_data(simulation_particle_data_t *particle_data);
 
 struct simulation_s
 {
-    
-    lua_Unsigned width;
-    
-    lua_Unsigned height;
-    
+        
     lua_Integer *targets;
-
+    
     bool *targets_update;
     
     buffer_t *particle_data_buffer;
@@ -50,6 +46,10 @@ struct simulation_s
     simulation_particle_data_t **particle_data;
     
     lua_State *lua_state;
+
+    lua_Unsigned width;
+    
+    lua_Unsigned height;
     
 };
 
