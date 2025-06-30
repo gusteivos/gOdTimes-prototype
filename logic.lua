@@ -15,9 +15,7 @@ empty = {
     g=0,
     b=0,
     a=0,
-    update = function(x, y)
-    end
-}
+ }
 
 sand = {
     name = "sand",
@@ -81,7 +79,7 @@ smoke = {
     a=127,
     update = function(x, y)
         local name = getName(simulation, x, y - 1)
-        if name == empty.name or name == nil then
+        if name == empty.name or name == water.name or name == nil then
             tryMove(x, y, smoke.name, x, y - 1, empty.name)
         else
             local dirs = {1, -1}
@@ -105,8 +103,6 @@ stone = {
     g=127,
     b=127,
     a=255,
-    update = function(x, y)
-    end
 }
 
 wood = {
@@ -115,8 +111,6 @@ wood = {
     g=48,
     b=24,
     a=255,
-    update = function(x, y)
-    end
 }
 
 registerParticle(simulation, empty)

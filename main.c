@@ -6,8 +6,8 @@ static viewport_t *viewport = NULL;
 #define WINDOW_START_WIDTH 640
 #define WINDOW_START_HEIGHT 360
 
-#define VIEWPORT_WIDTH 320
-#define VIEWPORT_HEIGHT 180
+#define VIEWPORT_WIDTH 200
+#define VIEWPORT_HEIGHT 300
 
 
 static luascript_pair_descriptor_t gOdTimes_app_descriptor[] = {
@@ -207,6 +207,96 @@ static void version(FILE *out, bool all, int exit_code)
     exit(exit_code);
 
 }
+
+int
+SDL_RenderDrawCircle(SDL_Renderer * renderer, int x, int y, int radius)
+{
+    int offsetx, offsety, d;
+    int status;
+
+    offsetx = 0;
+    offsety = radius;
+    d = radius -1;
+    status = 0;
+
+    while (offsety >= offsetx) {
+        status += SDL_RenderDrawPoint(renderer, x + offsetx, y + offsety);
+        status += SDL_RenderDrawPoint(renderer, x + offsety, y + offsetx);
+        status += SDL_RenderDrawPoint(renderer, x - offsetx, y + offsety);
+        status += SDL_RenderDrawPoint(renderer, x - offsety, y + offsetx);
+        status += SDL_RenderDrawPoint(renderer, x + offsetx, y - offsety);
+        status += SDL_RenderDrawPoint(renderer, x + offsety, y - offsetx);
+        status += SDL_RenderDrawPoint(renderer, x - offsetx, y - offsety);
+        status += SDL_RenderDrawPoint(renderer, x - offsety, y - offsetx);
+
+        if (status < 0) {
+            status = -1;
+            break;
+        }
+
+        if (d >= 2*offsetx) {
+            d -= 2*offsetx + 1;
+            offsetx +=1;
+        }
+        else if (d < 2 * (radius - offsety)) {
+            d += 2 * offsety - 1;
+            offsety -= 1;
+        }
+        else {
+            d += 2 * (offsety - offsetx - 1);
+            offsety -= 1;
+            offsetx += 1;
+        }
+    }
+
+    return status;
+}
+
+int
+SetCircle(simulation_t *simul, int x, int y, int radius, lua_Integer q)
+{
+    int offsetx, offsety, d;
+    int status;
+
+    offsetx = 0;
+    offsety = radius;
+    d = radius -1;
+    status = 0;
+
+    while (offsety >= offsetx) {
+
+        status += simulation_set_target(simul, x + offsetx, y + offsety, q);
+        status += simulation_set_target(simul, x + offsety, y + offsetx, q);
+        status += simulation_set_target(simul, x - offsetx, y + offsety, q);
+        status += simulation_set_target(simul, x - offsety, y + offsetx, q);
+        status += simulation_set_target(simul, x + offsetx, y - offsety, q);
+        status += simulation_set_target(simul, x + offsety, y - offsetx, q);
+        status += simulation_set_target(simul, x - offsetx, y - offsety, q);
+        status += simulation_set_target(simul, x - offsety, y - offsetx, q);
+
+        if (status < 0) {
+            status = -1;
+            break;
+        }
+
+        if (d >= 2*offsetx) {
+            d -= 2*offsetx + 1;
+            offsetx +=1;
+        }
+        else if (d < 2 * (radius - offsety)) {
+            d += 2 * offsety - 1;
+            offsety -= 1;
+        }
+        else {
+            d += 2 * (offsety - offsetx - 1);
+            offsety -= 1;
+            offsetx += 1;
+        }
+    }
+
+    return status;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -425,7 +515,7 @@ int main(int argc, char *argv[])
                 if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT))
                 {
 
-                    simulation_set_target(simulation, mouse_position_viewport.x, mouse_position_viewport.y, left);
+                    SetCircle(simulation, mouse_position_viewport.x, mouse_position_viewport.y, 2, left);
 
                 }
 
@@ -463,6 +553,26 @@ int main(int argc, char *argv[])
         SDL_RenderClear(renderer);
 
         simulation_render(simulation, renderer);
+
+
+        update_mouse(window_enter);
+        
+        SDL_Point mouse_position_viewport = mouse_position;
+
+        viewport_unscaled_coordinates(viewport, &mouse_position_viewport.x, &mouse_position_viewport.y);
+
+
+        SDL_SetRenderDrawColor(renderer, 127, 0, 0, 127);
+
+        SDL_RenderDrawPoint(renderer, mouse_position_viewport.x, mouse_position_viewport.y);
+
+        SDL_SetRenderDrawColor(renderer, 0, 127, 0, 127);
+
+        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, 3);
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 127, 127);
+
+        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, 5);
 
 
         SDL_SetRenderTarget(renderer, NULL);
