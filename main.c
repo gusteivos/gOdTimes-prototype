@@ -169,22 +169,6 @@ static void version(FILE *out, bool all, int exit_code)
     if (all)
     {
 
-#if 0
-        const int SDL3_compiled = SDL_VERSION;
-        const int SDL3_linked = SDL_GetVersion();
-        fprintf(
-            out,
-            "SDL3 version - compiled: %d.%d.%d, linked: %d.%d.%d\n",
-            SDL_VERSIONNUM_MAJOR(SDL3_compiled),
-            SDL_VERSIONNUM_MINOR(SDL3_compiled),
-            SDL_VERSIONNUM_MICRO(SDL3_compiled),
-            SDL_VERSIONNUM_MAJOR(SDL3_linked),
-            SDL_VERSIONNUM_MINOR(SDL3_linked),
-            SDL_VERSIONNUM_MICRO(SDL3_linked)
-            );
-#endif
-
-#if 1
         SDL_version SDL2_compiled;
         SDL_VERSION(&SDL2_compiled);
         SDL_version SDL2_linked;
@@ -199,7 +183,16 @@ static void version(FILE *out, bool all, int exit_code)
             SDL2_linked.minor,
             SDL2_linked.patch
         );
-#endif
+
+        lua_State *lua_linked_state = luaL_newstate();
+        const lua_Number *lua_linked_version = lua_version(lua_linked_state);
+        fprintf(
+            out,
+            "Lua version - compiled: %d.%s, linked: %.1f\n",
+            LUA_VERSION_NUM, LUA_VERSION_RELEASE,
+            *lua_linked_version
+        );
+        lua_close(lua_linked_state);
 
     }
 

@@ -2,8 +2,8 @@
 
 
 VS_VERSION_INFO VERSIONINFO
-    FILEVERSION    0,0,0,0
-    PRODUCTVERSION 0,0,0,0
+    FILEVERSION    0,0,1,0
+    PRODUCTVERSION 0,0,1,0
 
     FILEFLAGSMASK VS_FF_DEBUG
 #ifdef NDEBUG
@@ -24,8 +24,8 @@ VS_VERSION_INFO VERSIONINFO
         BLOCK "040904b0"
         {
 
-            VALUE "FileVersion",      "0.0.0.0\0"
-            VALUE "ProductVersion",   "0.0.0.0\0"
+            VALUE "FileVersion",      "0.0.1.0\0"
+            VALUE "ProductVersion",   "0.0.1.0\0"
             VALUE "LegalCopyright",   "MIT License Copyright (c) 2025 Gustavo Ramos Carvalho\0"
             VALUE "OriginalFilename", "gOdTimes-prototype.exe\0"
             VALUE "ProductName",      "gOdTimes-prototype\0"
