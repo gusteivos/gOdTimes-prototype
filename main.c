@@ -35,21 +35,21 @@ static luascript_pair_descriptor_t gOdTimes_app_descriptor[] = {
     {
         .field = true,
         .type = LUA_TNUMBER,
-        .array_table_number_integer = true,
+        .array_table_number_integer = false,
         .name = "ms",
         .pairs = NULL
     },
     {
         .field = true,
         .type = LUA_TNUMBER,
-        .array_table_number_integer = true,
+        .array_table_number_integer = false,
         .name = "mouse_ms",
         .pairs = NULL
     },
     {
         .field = true,
         .type = LUA_TNUMBER,
-        .array_table_number_integer = true,
+        .array_table_number_integer = false,
         .name = "keyboard_ms",
         .pairs = NULL
     },
@@ -84,9 +84,9 @@ struct __attribute__((packed)) gOdTimes_app_s
     lua_Unsigned width;
     lua_Unsigned height;
     bool resizable;
-    lua_Unsigned ms;
-    lua_Unsigned mouse_ms;
-    lua_Unsigned keyboard_ms;
+    lua_Number ms;
+    lua_Number mouse_ms;
+    lua_Number keyboard_ms;
 };
 
 typedef struct __attribute__((packed)) gOdTimes_app_s gOdTimes_app_t;
@@ -318,17 +318,17 @@ int main(int argc, char *argv[])
     lua_Integer left = 0;
     lua_Integer right = 0;
 
-    Uint32 last_time = SDL_GetTicks();
-    Uint32 current_time;
     Uint32 mouse_time;
     Uint32 keyboard_time;
+
+    loop_start();
+
+    loop_set_target_elapsed_performance_counter_fms(config.app.ms);
 
     while (1)
     {
 
-        current_time = SDL_GetTicks();
-        Uint32 delta_time = current_time - last_time;
-        last_time = current_time;
+        loop_on_start();
 
         update_window_attributes();
 
@@ -373,8 +373,11 @@ int main(int argc, char *argv[])
 
         }
 
+        printf("loop_fdelta_time %f, fps %f.\n", loop_fdelta_time, 1 / loop_fdelta_time);
 
-        keyboard_time += delta_time;
+        loop_on_middle();
+
+        keyboard_time += loop_u64delta_time;
 
         if (keyboard_time >= config.app.keyboard_ms)
         {
@@ -405,7 +408,7 @@ int main(int argc, char *argv[])
 
         }
 
-        mouse_time += delta_time;
+        mouse_time += loop_u64delta_time;
 
         if (mouse_time > config.app.mouse_ms)
         {
@@ -468,22 +471,11 @@ int main(int argc, char *argv[])
 
         SDL_RenderPresent(renderer);
 
-
-        printf("[delta_time %d\n", delta_time);
-
-        Sint32 delta_time_diff = config.app.ms - delta_time;
-
-        if (delta_time_diff > 0)
-        {
-
-            printf("delta_time_diff %d]\n", delta_time_diff);
-
-            SDL_Delay((Uint32)delta_time_diff);
-
-        }
+        loop_on_end();
 
     }
 
+    loop_end();
 
     return EXIT_SUCCESS;
 

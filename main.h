@@ -23,6 +23,7 @@
 
 #include "gOdtimes.h"
 
+#include "loop.h"
 
 int _error(
     const char *file,

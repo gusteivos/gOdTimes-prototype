@@ -30,11 +30,11 @@ CC:=gcc
 CC_FLAGS:=-pedantic -pedantic-errors -Wall -Wextra
 
 ifeq ($(BUILD),debug)
-	CC_BUILD=-g -O0 -DDEBUG
+	CC_BUILD=-pg -O0 -DDEBUG
 else ifeq ($(BUILD),release)
 	CC_BUILD=-O2 -DNDEBUG
 else ifeq ($(BUILD),native-debug)
-	CC_BUILD=-g -O0 -march=native -DDEBUG
+	CC_BUILD=-pg -O0 -march=native -DDEBUG
 else ifeq ($(BUILD),native-release)
 	CC_BUILD=-O2 -march=native -DNDEBUG
 else
