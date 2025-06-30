@@ -51,9 +51,9 @@ OBJS=$(SRCS:.c=$(OBJ))
 LIBS=-lm -lSDL2main -lSDL2 -llua5.3
 
 ifeq ($(OS_NAME),Windows)
-	gOdTimes_rc:=gOdTimes.rc
-	gOdTimes_rc_OBJ=$(gOdTimes_rc)$(OBJ)
-	OBJS+=$(gOdTimes_rc_OBJ)
+	gOdTimes_prototype_rc:=gOdTimes-prototype.rc
+	gOdTimes_prototype_rc_OBJ=$(gOdTimes_prototype_rc)$(OBJ)
+	OBJS+=$(gOdTimes_prototype_rc_OBJ)
 endif
 
 $(TARGET): $(OBJS)
@@ -66,7 +66,7 @@ run: $(TARGET)
 	$(CC) $(CC_FLAGS) $(CC_BUILD) $(INCS) -c $< -o $@ $(LIBS)
 
 ifeq ($(OS_NAME),Windows)
-$(gOdTimes_rc_OBJ): $(gOdTimes_rc)
+$(gOdTimes_prototype_rc_OBJ): $(gOdTimes_prototype_rc)
 	$(WINDRES) $(WINDRES_FLAGS) -O coff -i $< -o $@
 endif
 
