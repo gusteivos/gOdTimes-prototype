@@ -411,6 +411,11 @@ int main(int argc, char *argv[])
     Uint32 mouse_time;
     Uint32 keyboard_time;
 
+    int g = 3;
+    int b = 5;
+
+    bool gb = false;
+
     loop_start();
 
     loop_set_target_elapsed_performance_counter_fms(config.app.ms);
@@ -432,6 +437,25 @@ int main(int argc, char *argv[])
 
             case SDL_QUIT:
                 return EXIT_SUCCESS;
+                break;
+
+            case SDL_MOUSEWHEEL:
+                {
+
+                    if (gb)
+                    {
+
+                        g += event.wheel.y;
+                    
+                    }
+                    else
+                    {
+
+                        b += event.wheel.y;
+
+                    }
+
+                }
                 break;
 
             case SDL_WINDOWEVENT:
@@ -492,11 +516,26 @@ int main(int argc, char *argv[])
                     ++right;
                 }
 
+                if (keyboard_state[SDL_SCANCODE_G])
+                {
+
+                    gb = true;
+
+                }
+
+                if (keyboard_state[SDL_SCANCODE_B])
+                {
+
+                    gb = false;
+                    
+                }
+
             }
 
             keyboard_time = 0;
 
         }
+
 
         mouse_time += loop_u64delta_time;
 
@@ -515,7 +554,7 @@ int main(int argc, char *argv[])
                 if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT))
                 {
 
-                    SetCircle(simulation, mouse_position_viewport.x, mouse_position_viewport.y, 2, left);
+                    SetCircle(simulation, mouse_position_viewport.x, mouse_position_viewport.y, gb ? g : b, left);
 
                 }
 
@@ -541,7 +580,7 @@ int main(int argc, char *argv[])
         simulation_update(simulation);
 
 
-        SDL_SetRenderDrawColor(renderer, 127, 127, 127, 255);
+        SDL_SetRenderDrawColor(renderer, 208, 208, 208, 255);
 
         SDL_RenderClear(renderer);
 
@@ -568,11 +607,11 @@ int main(int argc, char *argv[])
 
         SDL_SetRenderDrawColor(renderer, 0, 127, 0, 127);
 
-        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, 3);
+        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, g);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 127, 127);
 
-        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, 5);
+        SDL_RenderDrawCircle(renderer, mouse_position_viewport.x, mouse_position_viewport.y, b);
 
 
         SDL_SetRenderTarget(renderer, NULL);
