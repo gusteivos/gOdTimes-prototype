@@ -27,8 +27,8 @@ sand = {
         local name = getName(simulation, x, y + 1)
         if name == empty.name or name == nil then
             tryMove(x, y, sand.name, x, y + 1, empty.name)
-        elseif name == water.name then
-            tryMove(x, y, sand.name, x, y + 1, water.name)
+        elseif name == water.name or name == smoke.name then
+            tryMove(x, y, sand.name, x, y + 1, name)
         else
             local dirs = {1, -1}
             if math.random(0, 1) == 1 then
@@ -80,7 +80,7 @@ smoke = {
     update = function(x, y)
         local name = getName(simulation, x, y - 1)
         if name == empty.name or name == water.name or name == nil then
-            tryMove(x, y, smoke.name, x, y - 1, empty.name)
+            tryMove(x, y, smoke.name, x, y - 1, name)
         else
             local dirs = {1, -1}
             if math.random(0, 1) == 1 then
