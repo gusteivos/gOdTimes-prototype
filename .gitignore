@@ -23,3 +23,7 @@
 
 # Resource files
 *.res
+
+# Release
+release/
+release*.zip
