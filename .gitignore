@@ -19,6 +19,7 @@
 *.exe
 *.out
 *.elf
+*.AppImage
 
 # Resource files
 *.res
