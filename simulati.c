@@ -180,13 +180,11 @@ static int lua_simulation_register_particle(lua_State *L)
         strdup(name), (SDL_Color){ r, g, b, a }, lua_ref
     );
 
-    printf(
-        "%d\n", 
-        buffer_append(
+    buffer_append(
         sim->particle_data_buffer,
         sizeof(simulation_particle_data_t *),
         (char *)&p
-    ));
+    );
 
     sim->particle_data = (simulation_particle_data_t **)sim->particle_data_buffer->items;
 

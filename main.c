@@ -297,6 +297,60 @@ SetCircle(simulation_t *simul, int x, int y, int radius, lua_Integer q)
     return status;
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <SDL2/SDL.h>
+
+static void update_window_title(simulation_t *sim, int left, int right, float fps)
+{
+
+    if (left < 0)
+    {
+    
+        left = -left;
+    
+    }
+
+    char *strl = left >= sim->particle_data_count ? NULL : sim->particle_data[left]->name;
+
+    if (right < 0)
+    {
+    
+        right = -right;
+    
+    }
+
+    char *strr = right >= sim->particle_data_count ? NULL : sim->particle_data[right]->name;
+
+    const char *format = "gOdTimes [left %s | right %s] fps %.3f";
+
+    int size = snprintf(NULL, 0, format, strl, strr, fps);
+
+    if (size < 0)
+    {
+    
+        return;
+    
+    }
+
+    char *title = (char *)malloc((size_t)size + 1);
+    
+    if (title == NULL)
+    {
+     
+        return;
+    
+    }
+
+    snprintf(title, (size_t)size + 1, format, strl, strr, fps);
+
+    SDL_SetWindowTitle(window, title);
+
+    free(title);
+
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -487,8 +541,6 @@ int main(int argc, char *argv[])
 
         }
 
-        printf("loop_fdelta_time %f, fps %f.\n", loop_fdelta_time, 1 / loop_fdelta_time);
-
         loop_on_middle();
 
         keyboard_time += loop_u64delta_time;
@@ -534,6 +586,8 @@ int main(int argc, char *argv[])
 
             keyboard_time = 0;
 
+            update_window_title(simulation, left, right, 1.0 / loop_fdelta_time);
+
         }
 
 
@@ -570,12 +624,6 @@ int main(int argc, char *argv[])
             mouse_time = 0;
 
         }
-
-
-        char title[128];
-        snprintf(title, sizeof(title), "gOdTimes [left %lld | right %lld]", (long long)left, (long long)right);
-        SDL_SetWindowTitle(window, title);
-
 
         simulation_update(simulation);
 
