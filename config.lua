@@ -8,3 +8,8 @@ gOdTimes.app.resizable = true
 gOdTimes.app.ms = 16.667
 gOdTimes.app.mouse_ms = 25.0
 gOdTimes.app.keyboard_ms = 75.0
+
+gOdTimes.simulation = {}
+gOdTimes.simulation.width = 200
+gOdTimes.simulation.height = 300
+

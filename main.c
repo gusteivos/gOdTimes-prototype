@@ -62,6 +62,31 @@ static luascript_pair_descriptor_t gOdTimes_app_descriptor[] = {
     }
 };
 
+static luascript_pair_descriptor_t gOdTimes_simulation_descriptor[] = {
+    {
+        .field = true,
+        .type = LUA_TNUMBER,
+        .array_table_number_integer = true,
+        .name = "width",
+        .pairs = NULL
+    },
+    {
+        .field = true,
+        .type = LUA_TNUMBER,
+        .array_table_number_integer = true,
+        .name = "height",
+        .pairs = NULL
+    },
+    {
+        .field = false,
+        .type = LUA_TNONE,
+        .array_table_number_integer = false,
+        .name = NULL,
+        .pairs = NULL
+    }
+};
+
+
 static luascript_pair_descriptor_t gOdTimes_descriptor[] = {
     {
         .field = true,
@@ -69,6 +94,13 @@ static luascript_pair_descriptor_t gOdTimes_descriptor[] = {
         .array_table_number_integer = false,
         .name = "app",
         .pairs = gOdTimes_app_descriptor
+    },
+    {
+        .field = true,
+        .type = LUA_TTABLE,
+        .array_table_number_integer = false,
+        .name = "simulation",
+        .pairs = gOdTimes_simulation_descriptor
     },
     {
         .field = false,
@@ -91,10 +123,20 @@ struct __attribute__((packed)) gOdTimes_app_s
 
 typedef struct __attribute__((packed)) gOdTimes_app_s gOdTimes_app_t;
 
+struct __attribute__((packed)) gOdTimes_simulation_s
+{
+    lua_Unsigned width;
+    lua_Unsigned height;
+};
+
+typedef struct __attribute__((packed)) gOdTimes_simulation_s gOdTimes_simulation_t;
+
 struct __attribute__((packed)) gOdTimes_s
 {
 
     gOdTimes_app_t app;
+
+    gOdTimes_simulation_t simulation;
 
 };
 
@@ -415,7 +457,7 @@ int main(int argc, char *argv[])
 
     luascript_serialize_pairs(lua_config_state, gOdTimes_descriptor, config_buffer, NULL, NULL);
 
-    config.app = *(gOdTimes_app_t *)config_buffer->items;
+    config = *(gOdTimes_t *)config_buffer->items;
 
     gOdTimes_print(&config);
 
@@ -426,8 +468,8 @@ int main(int argc, char *argv[])
     luaL_openlibs(lua_simulation_state);
 
     simulation_t *simulation = new_simulation(
-        VIEWPORT_WIDTH,
-        VIEWPORT_HEIGHT,
+        config.simulation.width,
+        config.simulation.height,
         lua_simulation_state
     );
 
@@ -451,8 +493,8 @@ int main(int argc, char *argv[])
             renderer,
             SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_TARGET,
-            VIEWPORT_WIDTH,
-            VIEWPORT_HEIGHT
+            config.simulation.width,
+            config.simulation.height
         ),
         (SDL_Rect){ 0, 0, config.app.width, config.app.height }
     );
