@@ -357,10 +357,12 @@ int simulation_update(simulation_t *simulation)
 
     }
 
+    bool order = false;
+
     for (lua_Unsigned y = 0; y < simulation->height; ++y)
     {
 
-        for (lua_Unsigned x = 0; x < simulation->width; ++x)
+        for (lua_Unsigned x = order ? simulation->width - 1 : 0; order ? x > 0: x < simulation->width; x += order ? -1 : 1)
         {
 
             if (!simulation->targets_update[y * simulation->width + x])
@@ -388,6 +390,8 @@ int simulation_update(simulation_t *simulation)
 
         }
     
+        order != order;
+
     }
 
     return 0;
